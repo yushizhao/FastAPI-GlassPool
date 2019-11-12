@@ -15,8 +15,6 @@ def start_log(name):
 
 glassflow_log = start_log("glassflow")
 
-import functools
-
 def glassflow(func):
     @functools.wraps(func)
     def glassflow_decorator(*args, **kwargs):

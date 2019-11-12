@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-from glasspool_logging import glassflow, glassflow_log
+from glasspool_logging import glassflow_log
 from glasspool_config import config
 
 app = FastAPI()
