@@ -53,4 +53,4 @@ def post_api_v2_wallet__withdraw(coinName: str, req: schemas.JadeReq, db: Sessio
 
 if __name__ == "__main__":
     models.create_tables()
-    uvicorn.run(app, host = "0.0.0.0", port = 8000)
+    uvicorn.run(app, host = config["host"], port = config["port"])
