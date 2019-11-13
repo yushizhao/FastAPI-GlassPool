@@ -11,6 +11,7 @@ def create_order(db: Session, order: schemas.Order_Result):
         bizType = order.bizType,
         type = order.type,
         coinType = order.coinType,
+        from_ = order.from_,
         to = order.to,
         value = order.value,
         sequence = order.sequence,

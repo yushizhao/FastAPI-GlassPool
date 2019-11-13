@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Schema
 
 # class Signature(BaseModel):
 #     r: str
@@ -36,7 +36,7 @@ class Order_Result(BaseModel):
     type: str
     subType: str = ""
     coinType: str = None
-    # from
+    from_: str = Schema('0x', alias='from')
     to: str
     value: str
     sequence: int

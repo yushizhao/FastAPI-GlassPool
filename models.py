@@ -14,6 +14,7 @@ class Order_ORM(Base):
     bizType = Column(String)
     type = Column(String)
     coinType = Column(String)
+    from_ = Column(String)
     to = Column(String)
     value = Column(String)
     sequence = Column(Integer, unique=True)
