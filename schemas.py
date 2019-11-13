@@ -35,7 +35,7 @@ class Order_Result(BaseModel):
     bizType: str 
     type: str
     subType: str = ""
-    coinType: str = None
+    coinType: str
     from_: str = Schema('0x', alias='from')
     to: str
     value: str
