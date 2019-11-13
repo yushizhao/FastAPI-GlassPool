@@ -6,15 +6,19 @@ import schemas
 def create_order(db: Session, order: schemas.Order_Result):
     db_order = models.Order_ORM(
         txid = order.txid,
-        sequence = order.sequence,
         coinName = order.coinName,
         state = order.state,
         bizType = order.bizType,
         type = order.type,
+        coinType = order.coinType,
         to = order.to,
         value = order.value,
+        sequence = order.sequence,
+        confirmations = order.confirmations,
         create_at = order.create_at,
-        update_at = order.update_at
+        update_at = order.update_at,
+        hash = order.hash,
+        memo = order.memo
     )
     db.add(db_order)
     db.commit()

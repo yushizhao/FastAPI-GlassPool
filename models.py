@@ -9,16 +9,19 @@ class Order_ORM(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     txid = Column(String)
-    sequence = Column(Integer, unique=True)
     coinName = Column(String)
     state = Column(String)
     bizType = Column(String)
     type = Column(String)
+    coinType = Column(String)
     to = Column(String)
     value = Column(String)
+    sequence = Column(Integer, unique=True)
+    confirmations = Column(Integer)
     create_at = Column(Integer)
     update_at = Column(Integer)
+    hash = Column(String)
+    memo = Column(String)
     
-
 def create_tables():
     Base.metadata.create_all(engine)

@@ -34,8 +34,8 @@ class Order_Result(BaseModel):
     state: str
     bizType: str 
     type: str
-    # subType: str = "NASH"
-    coinType: str = "to do: coinName"
+    subType: str = ""
+    coinType: str = None
     # from
     to: str
     value: str
@@ -49,7 +49,7 @@ class Order_Result(BaseModel):
     fee: str = "0"
     fees: List = []
     data: Dict = {}
-    hash: str = ""
+    hash: str
     block: int = -1
     extraData: str = ""
     memo: str = ""
