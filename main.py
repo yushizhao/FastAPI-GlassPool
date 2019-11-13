@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from glasspool_logging import glassflow_log
 from glasspool_config import config
+from signature import get_public_key
 import schemas
 from database import get_db
 import models
@@ -17,6 +18,10 @@ app = FastAPI()
 async def root():
     glassflow_log.debug(config["privateKey"])
     return {"message": "Hello World"}
+
+@app.get("/publicKey")
+async def get_publicKey():
+    return {"message": get_public_key(config["privateKey"])}
 
 @app.get("/api/v2/orders/{id}", response_model = schemas.JadeResp)
 def get_api_v2_orders_(id: int, db: Session = Depends(get_db)):
