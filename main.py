@@ -21,8 +21,8 @@ async def root():
 @app.get("/api/v2/orders/{id}", response_model = schemas.JadeResp)
 def get_api_v2_orders_(id: int, db: Session = Depends(get_db)):
     order_orm = crud.get_order(db = db, id = id)
-    order_dict = schemas.Order_Result.from_orm(order_orm).dict(by_alias=True)
-    order_resp = schemas.JadeResp(result = order_dict)
+    order_res = schemas.Order_Result.from_orm(order_orm).to_result()
+    order_resp = schemas.JadeResp(result = order_res.dict(by_alias=True))
     return order_resp
 
 @app.post("/api/v2/wallet/{coinName}/withdraw", response_model = schemas.JadeResp)
@@ -47,8 +47,8 @@ def post_api_v2_wallet__withdraw(coinName: str, req: schemas.JadeReq, db: Sessio
     )
 
     order_orm = crud.create_order(db = db, order = order_res)
-    order_dict = schemas.Order_Result.from_orm(order_orm).dict(by_alias=True)
-    order_resp = schemas.JadeResp(result = order_dict)
+    order_res = schemas.Order_Result.from_orm(order_orm).to_result()
+    order_resp = schemas.JadeResp(result = order_res.dict(by_alias=True))
     return order_resp
 
 if __name__ == "__main__":

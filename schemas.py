@@ -12,7 +12,7 @@ class JadeResp(BaseModel):
     status: int = 0
     message: str = "OK"
     crypto: str = "ecc"
-    timestamp: int= 0
+    timestamp: int = 0
     sig: Dict = {}
     result: Dict
 
@@ -25,6 +25,28 @@ class JadeReq(BaseModel):
     lang: str = "cn"
     data: Dict
 
+class Order_Result_Data_FromTo(BaseModel):
+    address: str
+    value: str
+    asset: str
+
+class Order_Result_Data(BaseModel):
+    timestampBegin: int
+    timestampFinish: int = 0
+    nonce: int = 0
+    type: str
+    hash: str
+    blockNumber: int
+    blockHash: str = "0x"
+    from_: Order_Result_Data_FromTo
+    to: Order_Result_Data_FromTo
+    fee: str
+    confirmations: int
+
+    class Config:
+        allow_population_by_alias = True
+        fields = {'from_': {'alias': 'from'}}
+
 class Order_Result(BaseModel):
     _id: str = ""
     id: str = "to be assigned by database"
@@ -36,7 +58,7 @@ class Order_Result(BaseModel):
     type: str
     subType: str = ""
     coinType: str
-    from_: str = Schema('0x', alias='from')
+    from_: str
     to: str
     value: str
     sequence: int
@@ -48,7 +70,7 @@ class Order_Result(BaseModel):
     n: int = 0
     fee: str = "0"
     fees: List = []
-    data: Dict = {}
+    data: Order_Result_Data = None
     hash: str
     block: int = -1
     extraData: str = ""
@@ -56,7 +78,32 @@ class Order_Result(BaseModel):
     sendAgain: bool = False
 
     class Config:
+        allow_population_by_alias = True
         orm_mode = True
+        fields = {'from_': {'alias': 'from'}}
+
+    def to_result(self):
+        self.data = Order_Result_Data(
+            timestampBegin = self.create_at,
+            type = self.type,
+            hash = self.hash,
+            blockNumber = self.block,
+            from_ = Order_Result_Data_FromTo(
+                address = self.from_,
+                value = self.value,
+                asset = self.coinType
+            ),
+            to = Order_Result_Data_FromTo(
+                address = self.to,
+                value = self.value,
+                asset = self.coinType
+            ),
+            fee = self.fee,
+            confirmations = self.confirmations
+        )
+        return self
+
+        
 
 # class Order_Signed(JadeResp):
 #     result: Order_Result
