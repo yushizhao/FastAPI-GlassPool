@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from glasspool_logging import glassflow_log
 from glasspool_config import config
-from signature import get_public_key
+from jadepool_signature import get_public_key
 import schemas
 from database import get_db
 import models
@@ -28,6 +28,7 @@ def get_api_v2_orders_(id: int, db: Session = Depends(get_db)):
     order_orm = crud.get_order(db = db, id = id)
     order_res = schemas.Order_Result.from_orm(order_orm).to_result()
     order_resp = schemas.JadeResp(result = order_res.dict(by_alias=True))
+    order_resp.sign(config["privateKey"])
     return order_resp
 
 @app.post("/api/v2/wallet/{coinName}/withdraw", response_model = schemas.JadeResp)
@@ -54,6 +55,7 @@ def post_api_v2_wallet__withdraw(coinName: str, req: schemas.JadeReq, db: Sessio
     order_orm = crud.create_order(db = db, order = order_res)
     order_res = schemas.Order_Result.from_orm(order_orm).to_result()
     order_resp = schemas.JadeResp(result = order_res.dict(by_alias=True))
+    order_resp.sign(config["privateKey"])
     return order_resp
 
 if __name__ == "__main__":

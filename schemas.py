@@ -1,8 +1,11 @@
 from typing import List, Dict
+import time
 
 from pydantic import BaseModel, Schema
 
-# class Signature(BaseModel):
+from jadepool_signature import sign_jade_dict, flatten_jade_dict
+
+# class JadeSig(BaseModel):
 #     r: str
 #     s: str
 #     v: int
@@ -14,8 +17,13 @@ class JadeResp(BaseModel):
     crypto: str = "ecc"
     timestamp: int = 0
     sig: Dict = {}
-    result: Dict
+    result: Dict = {}
 
+    def sign(self, private_key_base64: str):
+        self.timestamp = int(time.time()*1000)
+        msg = f"{flatten_jade_dict(self.result)}timestamp{self.timestamp}"
+        self.sig = sign_jade_dict(private_key_base64 = private_key_base64, msg = msg)
+        
 class JadeReq(BaseModel):
     appid: str
     timestamp: int
