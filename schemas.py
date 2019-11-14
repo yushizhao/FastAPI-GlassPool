@@ -5,6 +5,8 @@ from pydantic import BaseModel, Schema
 
 from jadepool_signature import sign_jade_dict, flatten_jade_dict
 
+# from glasspool_logging import glassflow_log
+
 # class JadeSig(BaseModel):
 #     r: str
 #     s: str
@@ -22,6 +24,7 @@ class JadeResp(BaseModel):
     def sign(self, private_key_base64: str):
         self.timestamp = int(time.time()*1000)
         msg = f"{flatten_jade_dict(self.result)}timestamp{self.timestamp}"
+        # glassflow_log.debug(msg)
         self.sig = sign_jade_dict(private_key_base64 = private_key_base64, msg = msg)
         
 class JadeReq(BaseModel):
@@ -46,8 +49,8 @@ class Order_Result_Data(BaseModel):
     hash: str
     blockNumber: int
     blockHash: str = "0x"
-    from_: Order_Result_Data_FromTo
-    to: Order_Result_Data_FromTo
+    from_: List[Order_Result_Data_FromTo]
+    to: List[Order_Result_Data_FromTo]
     fee: str
     confirmations: int
 
@@ -96,16 +99,20 @@ class Order_Result(BaseModel):
             type = self.type,
             hash = self.hash,
             blockNumber = self.block,
-            from_ = Order_Result_Data_FromTo(
+            from_ = [
+                Order_Result_Data_FromTo(
                 address = self.from_,
                 value = self.value,
                 asset = self.coinType
-            ),
-            to = Order_Result_Data_FromTo(
+            )
+            ],
+            to = [
+                Order_Result_Data_FromTo(
                 address = self.to,
                 value = self.value,
                 asset = self.coinType
-            ),
+            )
+            ],
             fee = self.fee,
             confirmations = self.confirmations
         )
