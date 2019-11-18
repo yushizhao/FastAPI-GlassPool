@@ -75,6 +75,12 @@ def post_api_v2_wallet__withdraw(coinName: str, req: schemas.JadeReq, db: Sessio
     order_resp.sign(config["privateKey"])
     return order_resp
 
+@app.post("/callback")
+async def post_callback(order_res: schemas.Order_Result):
+    order_resp = schemas.JadeResp(result = order_res.to_result().dict(by_alias=True))
+    order_resp.sign(config["privateKey"])
+    return order_resp.callback(config["callback"])
+
 if __name__ == "__main__":
     models.create_tables()
     uvicorn.run(app, host = config["host"], port = config["port"])

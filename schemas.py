@@ -1,5 +1,6 @@
 from typing import List, Dict
 import time
+import requests
 
 from pydantic import BaseModel, Schema
 
@@ -26,7 +27,10 @@ class JadeResp(BaseModel):
         msg = f"{flatten_jade_dict(self.result)}timestamp{self.timestamp}"
         # glassflow_log.debug(msg)
         self.sig = sign_jade_dict(private_key_base64 = private_key_base64, msg = msg)
-        
+
+    def callback(self, url: str):
+        return requests.post(url,json = self.dict()).json()
+
 class JadeReq(BaseModel):
     appid: str
     timestamp: int
