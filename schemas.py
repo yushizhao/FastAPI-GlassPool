@@ -36,6 +36,18 @@ class JadeReq(BaseModel):
     lang: str = "cn"
     data: Dict
 
+class Address_Result(BaseModel):
+    id: int = 0
+    appid: str = "glasspool"
+    type: str
+    address: str
+    state: str = "used"
+    mode: str
+    create_at: int
+    update_at: int
+    namespace: str = ""
+    sid: str = ""
+
 class Order_Result_Data_FromTo(BaseModel):
     address: str
     value: str

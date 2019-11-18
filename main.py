@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from glasspool_logging import glassflow_log
 from glasspool_config import config
 from jadepool_signature import get_public_key
+from glassblock import GlassBlock
 import schemas
 from database import get_db
 import models
@@ -22,6 +23,21 @@ async def root():
 @app.get("/publicKey")
 async def get_publicKey():
     return {"message": get_public_key(config["privateKey"])}
+
+@app.post("/api/v2/address/{coinName}/new",response_model = schemas.JadeResp)
+async def post_api_v2_address__new(coinName: str, req: schemas.JadeReq):
+    ts = int(time.time()*1000)
+    address = GlassBlock(coinName).get_address()
+    address_res = schemas.Address_Result(
+        type = coinName,
+        address = address,
+        mode = req.data.get("mode"),
+        create_at = ts,
+        update_at = ts
+    )
+    address_resp =  schemas.JadeResp(result = address_res.dict())
+    address_resp.sign(config["privateKey"])
+    return address_resp
 
 @app.get("/api/v2/orders/{id}", response_model = schemas.JadeResp)
 def get_api_v2_orders_(id: int, db: Session = Depends(get_db)):
