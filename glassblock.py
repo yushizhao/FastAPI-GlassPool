@@ -1,7 +1,6 @@
 import time
 from secrets import token_bytes, token_urlsafe
 
-from eth_utils import keccak
 from eth_utils.conversions import to_hex
 from eth_keys import keys
 
@@ -28,8 +27,6 @@ class GlassBlock:
             self.use_memo = False
             self.get_address = get_eth_address
     
-    def get_number_and_hash(self):
+    def get_number(self):
         n = int(time.time() / self.blocktime) - self.intercept
-        hash_bytes = keccak(bytes(n) + self.chain.encode())
-        return n, to_hex(hash_bytes)
-        
+        return n

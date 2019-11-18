@@ -1,6 +1,7 @@
 from typing import List, Dict
 import time
 import requests
+import hashlib
 
 from pydantic import BaseModel, Schema
 
@@ -64,7 +65,7 @@ class Order_Result_Data(BaseModel):
     type: str
     hash: str
     blockNumber: int
-    blockHash: str = "0x"
+    blockHash: str
     from_: List[Order_Result_Data_FromTo]
     to: List[Order_Result_Data_FromTo]
     fee: str
@@ -88,7 +89,7 @@ class Order_Result(BaseModel):
     from_: str
     to: str
     value: str
-    sequence: int
+    sequence: int = -1
     confirmations: int = 0
     create_at: int
     update_at: int
@@ -110,11 +111,20 @@ class Order_Result(BaseModel):
         fields = {'from_': {'alias': 'from'}}
 
     def to_result(self):
+        if self.block == -1:
+            blockHash = ""
+        else:
+            m = hashlib.sha256()
+            m.update(bytes(str(self.block).encode()))
+            m.update(self.type.encode())
+            blockHash = m.hexdigest()
+        
         self.data = Order_Result_Data(
             timestampBegin = self.create_at,
             type = self.type,
             hash = self.hash,
             blockNumber = self.block,
+            blockHash = blockHash,
             from_ = [
                 Order_Result_Data_FromTo(
                 address = self.from_,
@@ -134,7 +144,8 @@ class Order_Result(BaseModel):
         )
         return self
 
-        
-
-# class Order_Signed(JadeResp):
-#     result: Order_Result
+class Deposit(BaseModel):
+    type: str
+    value: str
+    address: str
+    memo: str = ""

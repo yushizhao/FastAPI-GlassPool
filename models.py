@@ -16,7 +16,7 @@ class Order_ORM(Base):
     from_ = Column(String)
     to = Column(String)
     value = Column(String)
-    sequence = Column(Integer, unique=True)
+    sequence = Column(Integer)
     confirmations = Column(Integer)
     create_at = Column(Integer)
     update_at = Column(Integer)

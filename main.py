@@ -1,4 +1,5 @@
 import time
+import hashlib
 
 import uvicorn
 from fastapi import FastAPI, Depends
@@ -37,7 +38,7 @@ async def post_api_v2_address__new(coinName: str, req: schemas.JadeReq):
         create_at = ts,
         update_at = ts
     )
-    
+
     address_resp =  schemas.JadeResp(result = address_res.dict())
     address_resp.sign(config["privateKey"])
     return address_resp
@@ -76,6 +77,37 @@ def post_api_v2_wallet__withdraw(coinName: str, req: schemas.JadeReq, db: Sessio
     order_resp = schemas.JadeResp(result = order_res.dict(by_alias=True))
     order_resp.sign(config["privateKey"])
     return order_resp
+
+@app.post("/deposit")
+def post_deposit(deposit: schemas.Deposit, db: Session = Depends(get_db)):
+    ts = int(time.time()*1000)
+    asset = config.get("assets").get(deposit.type, {})
+    block = GlassBlock(asset.get("type",""))
+    
+    m = hashlib.sha256()
+    m.update(str(ts).encode())
+    txid = m.hexdigest()
+
+    order_res = schemas.Order_Result(
+        coinName = deposit.type,
+        txid = txid,
+        state = "pending",
+        bizType = "DEPOSIT",
+        type = block.chain,
+        coinType = deposit.type,
+        from_ = "0x",
+        to = deposit.address,
+        value = deposit.value,
+        confirmations = 1,
+        create_at = ts,
+        update_at = ts,
+        hash = txid,
+        block = block.get_number(),
+        memo = deposit.memo
+    )
+
+    order_orm = crud.create_order(db = db, order = order_res)
+    return {"id": order_orm.id}
 
 @app.post("/callback")
 async def post_callback(order_res: schemas.Order_Result):
