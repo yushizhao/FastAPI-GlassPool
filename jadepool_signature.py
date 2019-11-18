@@ -38,8 +38,8 @@ def sign_jade_dict(private_key_base64: str, msg: str):
     k = PrivateKey(secret = codecs.decode(private_key_base64.encode(),'base64'))
     signature = k.sign_recoverable(message = msg.encode(), hasher = keccak)
     jade_sig = {
-        "r": codecs.encode(signature[:32],'base64')[:-1],
-        "s": codecs.encode(signature[32:64],'base64')[:-1],
+        "r": codecs.encode(signature[:32],'base64')[:-1].decode(),
+        "s": codecs.encode(signature[32:64],'base64')[:-1].decode(),
         "v": int(signature[64]) + 27
     }
     return jade_sig
