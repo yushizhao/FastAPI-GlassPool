@@ -27,7 +27,8 @@ async def get_publicKey():
 @app.post("/api/v2/address/{coinName}/new",response_model = schemas.JadeResp)
 async def post_api_v2_address__new(coinName: str, req: schemas.JadeReq):
     ts = int(time.time()*1000)
-    address = GlassBlock(coinName).get_address()
+    asset = config.get("assets").get(coinName, {})
+    address = GlassBlock(asset.get("type","")).get_address()
     
     address_res = schemas.Address_Result(
         type = coinName,
@@ -36,6 +37,7 @@ async def post_api_v2_address__new(coinName: str, req: schemas.JadeReq):
         create_at = ts,
         update_at = ts
     )
+    
     address_resp =  schemas.JadeResp(result = address_res.dict())
     address_resp.sign(config["privateKey"])
     return address_resp
