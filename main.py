@@ -28,6 +28,7 @@ async def get_publicKey():
 async def post_api_v2_address__new(coinName: str, req: schemas.JadeReq):
     ts = int(time.time()*1000)
     address = GlassBlock(coinName).get_address()
+    
     address_res = schemas.Address_Result(
         type = coinName,
         address = address,
