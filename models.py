@@ -21,6 +21,7 @@ class Order_ORM(Base):
     create_at = Column(Integer)
     update_at = Column(Integer)
     hash = Column(String)
+    block = Column(Integer)
     memo = Column(String)
     
 def create_tables():

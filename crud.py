@@ -20,6 +20,7 @@ def create_order(db: Session, order: schemas.Order_Result):
         create_at = order.create_at,
         update_at = order.update_at,
         hash = order.hash,
+        block = order.block,
         memo = order.memo
     )
     db.add(db_order)

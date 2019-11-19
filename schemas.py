@@ -113,20 +113,23 @@ class Order_Result(BaseModel):
     @classmethod
     def init_order(cls, bizType: str, coinName: str, type: str, to: str, value: str, sequence: int = -1, memo: str = ""):
         ts = int(time.time()*1000)
+        block = GlassBlock(type)
+
         return cls(
             coinName = coinName,
             state = "init",
             bizType = bizType,
             type = type,
             coinType = coinName,
-            from_ = "0x",
+            from_ = block.from_,
             to = to,
             value = value,
             sequence = sequence,
             confirmations = 0,
             create_at = ts,
             update_at = ts,
-            hash = ""
+            hash = "",
+            memo = memo
         )
 
     def get_updates(self, state: str):
@@ -148,6 +151,13 @@ class Order_Result(BaseModel):
             updates["from_"] = block.from_
             updates["hash"] = txid
             updates["block"] = block.get_number()
+        
+        if state == "pending":
+            updates["confirmations"] = 1
+        elif state == "done":
+            updates["confirmations"] = block.confirmation
+
+        return updates
 
     def to_result(self):
         if self.block == -1:

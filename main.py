@@ -92,6 +92,18 @@ async def post_callback(order_res: schemas.Order_Result):
     order_resp.sign(config["privateKey"])
     return order_resp.callback(config["callback"])
 
+@app.get("/callback/{state}/{id}")
+def get_callback____(state: str, id: int, db: Session = Depends(get_db)):
+    order_orm = crud.get_order(db = db, id = id)
+    updates = schemas.Order_Result.from_orm(order_orm).get_updates(state)
+    crud.update_order(db = db, id = id, updates = updates)
+
+    order_orm = crud.get_order(db = db, id = id)
+    order_res = schemas.Order_Result.from_orm(order_orm).to_result()
+    order_resp = schemas.JadeResp(result = order_res.dict(by_alias=True))
+    order_resp.sign(config["privateKey"])
+    return order_resp.callback(config["callback"])
+
 if __name__ == "__main__":
     models.create_tables()
     uvicorn.run(app, host = config["host"], port = config["port"])
