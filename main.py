@@ -104,6 +104,11 @@ def get_callback____(state: str, id: int, db: Session = Depends(get_db)):
     order_resp.sign(config["privateKey"])
     return order_resp.callback(config["callback"])
 
+@app.get("/orders/{state}")
+def get_orders______(state: str, page: int = 0, page_size: int = 100, db: Session = Depends(get_db)):
+    order_orms = crud.get_order_by_state(db = db, state = state, page = page, page_size = page_size)
+    return [schemas.Order_Result.from_orm(o).dict(by_alias=True) for o in order_orms]
+
 if __name__ == "__main__":
     models.create_tables()
     uvicorn.run(app, host = config["host"], port = config["port"])

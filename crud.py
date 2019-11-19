@@ -31,6 +31,9 @@ def create_order(db: Session, order: schemas.Order_Result):
 def get_order(db: Session, id: int):
     return db.query(models.Order_ORM).filter(models.Order_ORM.id == id).first()
 
+def get_order_by_state(db: Session, state: str, page: int = 0, page_size: int = 100):
+    return db.query(models.Order_ORM).filter(models.Order_ORM.state == state).limit(page_size).offset(page*page_size)
+
 def update_order(db: Session, id: int, updates: Dict):
     db.query(models.Order_ORM).filter(models.Order_ORM.id == id).update(updates, synchronize_session=False)
     db.commit()
