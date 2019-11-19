@@ -110,6 +110,25 @@ class Order_Result(BaseModel):
         orm_mode = True
         fields = {'from_': {'alias': 'from'}}
 
+    @classmethod
+    def init_order(cls, bizType: str, coinName: str, type: str, to: str, value: str, sequence: int = -1, memo: str = ""):
+        ts = int(time.time()*1000)
+        return cls(
+            coinName = coinName,
+            state = "init",
+            bizType = bizType,
+            type = type,
+            coinType = coinName,
+            from_ = "0x",
+            to = to,
+            value = value,
+            sequence = sequence,
+            confirmations = 0,
+            create_at = ts,
+            update_at = ts,
+            hash = ""
+        )
+
     def to_result(self):
         if self.block == -1:
             blockHash = ""
@@ -145,7 +164,7 @@ class Order_Result(BaseModel):
         return self
 
 class Deposit(BaseModel):
-    type: str
+    coinName: str
     value: str
-    address: str
+    to: str
     memo: str = ""

@@ -53,26 +53,18 @@ def get_api_v2_orders_(id: int, db: Session = Depends(get_db)):
 
 @app.post("/api/v2/wallet/{coinName}/withdraw", response_model = schemas.JadeResp)
 def post_api_v2_wallet__withdraw(coinName: str, req: schemas.JadeReq, db: Session = Depends(get_db)):
-    ts = int(time.time()*1000)
     asset = config.get("assets").get(coinName, {})
 
-    order_res = schemas.Order_Result(
-        coinName = coinName,
-        state = "init",
+    order_init = schemas.Order_Result.init_order(
         bizType = "WITHDRAW",
+        coinName = coinName,
         type = asset.get("type",""),
-        coinType = coinName,
-        from_ = "0x",
         to = req.data.get("to",""),
         value = req.data.get("value",""),
-        sequence = req.data.get("sequence"),
-        confirmations = 0,
-        create_at = ts,
-        update_at = ts,
-        hash = ""
+        sequence = req.data.get("sequence")
     )
 
-    order_orm = crud.create_order(db = db, order = order_res)
+    order_orm = crud.create_order(db = db, order = order_init)
     order_res = schemas.Order_Result.from_orm(order_orm).to_result()
     order_resp = schemas.JadeResp(result = order_res.dict(by_alias=True))
     order_resp.sign(config["privateKey"])
@@ -80,33 +72,18 @@ def post_api_v2_wallet__withdraw(coinName: str, req: schemas.JadeReq, db: Sessio
 
 @app.post("/deposit")
 def post_deposit(deposit: schemas.Deposit, db: Session = Depends(get_db)):
-    ts = int(time.time()*1000)
-    asset = config.get("assets").get(deposit.type, {})
-    block = GlassBlock(asset.get("type",""))
-    
-    m = hashlib.sha256()
-    m.update(str(ts).encode())
-    txid = m.hexdigest()
+    asset = config.get("assets").get(deposit.coinName, {})
 
-    order_res = schemas.Order_Result(
-        coinName = deposit.type,
-        txid = txid,
-        state = "init",
+    order_init = schemas.Order_Result.init_order(
         bizType = "DEPOSIT",
-        type = block.chain,
-        coinType = deposit.type,
-        from_ = "0x",
-        to = deposit.address,
+        coinName = deposit.coinName,
+        type = asset.get("type"),
+        to = deposit.to,
         value = deposit.value,
-        confirmations = 0,
-        create_at = ts,
-        update_at = ts,
-        hash = txid,
-        block = block.get_number(),
         memo = deposit.memo
     )
 
-    order_orm = crud.create_order(db = db, order = order_res)
+    order_orm = crud.create_order(db = db, order = order_init)
     return {"id": order_orm.id}
 
 @app.post("/callback")
