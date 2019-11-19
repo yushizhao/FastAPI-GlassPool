@@ -19,12 +19,16 @@ class GlassBlock:
             self.blocktime = 2
             self.intercept = 696546381
             self.use_memo = True
+            self.confirmation = 666
+            self.from_ = "glasspool-tap"
             self.get_address = get_eos_address
         else:
             self.chain = "ETH"
             self.blocktime = 12.5
             self.intercept = 116966214
             self.use_memo = False
+            self.confirmation = 666
+            self.from_ = get_eth_address()
             self.get_address = get_eth_address
     
     def get_number(self):

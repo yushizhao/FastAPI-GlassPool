@@ -6,7 +6,7 @@ import hashlib
 from pydantic import BaseModel, Schema
 
 from jadepool_signature import sign_jade_dict, flatten_jade_dict
-
+from glassblock import GlassBlock
 # from glasspool_logging import glassflow_log
 
 # class JadeSig(BaseModel):
@@ -128,6 +128,26 @@ class Order_Result(BaseModel):
             update_at = ts,
             hash = ""
         )
+
+    def get_updates(self, state: str):
+        ts = int(time.time()*1000)
+        block = GlassBlock(self.type)
+
+        updates = {
+            "update_at": ts,
+            "state": state
+        }
+
+        if self.state == "init":
+            m = hashlib.sha256()
+            m.update(bytes(str(self.create_at).encode()))
+            m.update(bytes(str(ts).encode()))
+            txid = m.hexdigest()
+
+            updates["txid"] = txid
+            updates["from_"] = block.from_
+            updates["hash"] = txid
+            updates["block"] = block.get_number()
 
     def to_result(self):
         if self.block == -1:

@@ -1,3 +1,4 @@
+from typing import Dict
 from sqlalchemy.orm import Session
 
 import models
@@ -28,3 +29,7 @@ def create_order(db: Session, order: schemas.Order_Result):
 
 def get_order(db: Session, id: int):
     return db.query(models.Order_ORM).filter(models.Order_ORM.id == id).first()
+
+def update_order(db: Session, id: int, updates: Dict):
+    db.query(models.Order_ORM).filter(models.Order_ORM.id == id).update(updates, synchronize_session=False)
+    db.commit()
